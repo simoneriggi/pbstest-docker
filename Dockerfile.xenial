@@ -54,24 +54,26 @@ RUN cd $DRMAA_SRC_DIR && make && make install
 #######################################
 ##  INSTALL PYTHON PBS DRMAA
 #######################################
-ENV DRMAA_PYTHON_URL=https://github.com/pygridtools/drmaa-python/archive/v0.7.9.tar.gz
-ENV DRMAA_PYTHON_SRC_DIR=$SRC_DIR/drmaa-python-0.7.9
-ENV DRMAA_PYTHON_INSTALL_DIR=$SOFTDIR/drmaa-python/v0.7.9
+#ENV DRMAA_PYTHON_URL=https://github.com/pygridtools/drmaa-python/archive/v0.7.9.tar.gz
+#ENV DRMAA_PYTHON_SRC_DIR=$SRC_DIR/drmaa-python-0.7.9
+#ENV DRMAA_PYTHON_INSTALL_DIR=$SOFTDIR/drmaa-python/v0.7.9
 
 # - Create directories
-RUN mkdir -p $DRMAA_PYTHON_INSTALL_DIR
+#RUN mkdir -p $DRMAA_PYTHON_INSTALL_DIR
 
 # - Download
-RUN cd $TAR_DIR && wget $DRMAA_PYTHON_URL -O drmaa-python-0.7.9.tar.gz
+#RUN cd $TAR_DIR && wget $DRMAA_PYTHON_URL -O drmaa-python-0.7.9.tar.gz
 
 # - Untar
-RUN cd $SRC_DIR && tar xzvf $TAR_DIR/drmaa-python-0.7.9.tar.gz
+#RUN cd $SRC_DIR && tar xzvf $TAR_DIR/drmaa-python-0.7.9.tar.gz
 
 # - Build
-RUN cd $DRMAA_PYTHON_SRC_DIR && python3.6 setup.py sdist bdist_wheel && python3.6 setup.py build
+#RUN cd $DRMAA_PYTHON_SRC_DIR && python3.6 setup.py sdist bdist_wheel && python3.6 setup.py build
 
 # - Install
-RUN export PYTHONPATH=$DRMAA_PYTHON_INSTALL_DIR/lib/python3.6/site-packages && cd $DRMAA_PYTHON_SRC_DIR && python3.6 setup.py install --prefix=$DRMAA_PYTHON_INSTALL_DIR
+#RUN export PYTHONPATH=$DRMAA_PYTHON_INSTALL_DIR/lib/python3.6/site-packages && cd $DRMAA_PYTHON_SRC_DIR && python3.6 setup.py install --prefix=$DRMAA_PYTHON_INSTALL_DIR
+
+RUN pip3.6 install drmaa
 
 
 #######################################
