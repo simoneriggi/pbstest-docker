@@ -80,7 +80,7 @@ RUN pip3.6 install drmaa
 ##   SET VARS
 #######################################
 ENV DRMAA_LIBRARY_PATH=$DRMAA_INSTALL_DIR/lib/libdrmaa.so
-ENV PYTHONPATH=$PYTHONPATH:$DRMAA_PYTHON_INSTALL_DIR/lib/python3.6/site-packages
+##ENV PYTHONPATH=$PYTHONPATH:$DRMAA_PYTHON_INSTALL_DIR/lib/python3.6/site-packages
 
 
 ######################################
