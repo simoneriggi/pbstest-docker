@@ -1,0 +1,96 @@
+FROM ubuntu:16.04
+
+MAINTAINER Simone Riggi "simone.riggi@gmail.com"
+
+######################################
+##   DEFINE CUSTOMIZABLE ARGS/ENVS
+######################################
+# - Create source & tar dirs
+ENV SOFTDIR=/opt/Software
+ENV TAR_DIR=$SOFTDIR/TarFiles
+ENV SRC_DIR=$SOFTDIR/Sources
+
+RUN mkdir -p $TAR_DIR && mkdir -p $SRC_DIR
+
+#######################################
+##  INSTALL LIBS
+#######################################
+# - Install packages
+RUN apt-get update && apt-get --no-install-recommends install -y dialog apt-utils apt-transport-https ca-certificates gnupg gnupg2 wget libcurl3 openssl systemd curl software-properties-common dpkg-dev g++ gcc binutils libtool pkg-config build-essential autoconf automake cmake nano unzip locate less git libssl-dev uuid-dev libcap-dev libpcre3-dev util-linux gperf
+
+# - Install python3.6
+RUN unset PYTHONPATH && add-apt-repository ppa:deadsnakes/ppa
+RUN apt-get update
+RUN apt-get install -y python3.6 python3.6-dev 
+
+# - Install pip3.6
+RUN unset PYTHONPATH && curl https://bootstrap.pypa.io/get-pip.py | python3.6
+
+# - Install libtorque2
+RUN apt-get install -y libtorque2-dev
+
+#######################################
+##  INSTALL PBS DRMAA
+#######################################
+ENV DRMAA_URL=https://sourceforge.net/projects/pbspro-drmaa/files/pbs-drmaa/1.0/pbs-drmaa-1.0.19.tar.gz
+ENV DRMAA_SRC_DIR=$SRC_DIR/pbs-drmaa-1.0.19
+ENV DRMAA_INSTALL_DIR=$SOFTDIR/pbs-drmaa/v1.0.19
+
+# - Create directories
+RUN mkdir -p $DRMAA_INSTALL_DIR
+
+# - Download
+RUN cd $TAR_DIR && wget $DRMAA_URL
+
+# - Untar
+RUN cd $SRC_DIR && tar xzvf $TAR_DIR/pbs-drmaa-1.0.19.tar.gz
+
+# - Configure
+RUN cd $DRMAA_SRC_DIR && ./configure --prefix=$DRMAA_INSTALL_DIR
+
+# - Build & install
+RUN cd $DRMAA_SRC_DIR && make && make install
+
+#######################################
+##  INSTALL PYTHON PBS DRMAA
+#######################################
+ENV DRMAA_PYTHON_URL=https://github.com/pygridtools/drmaa-python/archive/v0.7.9.tar.gz
+ENV DRMAA_PYTHON_SRC_DIR=$SRC_DIR/drmaa-python-0.7.9
+ENV DRMAA_PYTHON_INSTALL_DIR=$SOFTDIR/drmaa-python/v0.7.9
+
+# - Create directories
+RUN mkdir -p $DRMAA_PYTHON_INSTALL_DIR
+
+# - Download
+RUN cd $TAR_DIR && wget $DRMAA_PYTHON_URL -O drmaa-python-0.7.9.tar.gz
+
+# - Untar
+RUN cd $SRC_DIR && tar xzvf $TAR_DIR/drmaa-python-0.7.9.tar.gz
+
+# - Build
+RUN cd $DRMAA_PYTHON_SRC_DIR && python3.6 setup.py build
+
+# - Install
+RUN export PYTHONPATH=$DRMAA_PYTHON_INSTALL_DIR/lib/python3.6/site-packages && cd $DRMAA_PYTHON_SRC_DIR && python3.6 setup.py install --prefix=$DRMAA_PYTHON_INSTALL_DIR
+
+
+#######################################
+##   SET VARS
+#######################################
+ENV DRMAA_LIBRARY_PATH=$DRMAA_INSTALL_DIR/lib/libdrmaa.so
+ENV PYTHONPATH=$PYTHONPATH:$DRMAA_PYTHON_INSTALL_DIR/lib/python3.6/site-packages
+
+
+######################################
+##     RUN
+######################################
+# - Copy run script
+COPY sleeper.sh /opt/sleeper.sh
+COPY submit.py /opt/submit.py
+RUN chmod +x /opt/sleeper.sh
+
+# - Run 
+CMD ["python3.6", "/opt/submit.py"]
+
+
+
