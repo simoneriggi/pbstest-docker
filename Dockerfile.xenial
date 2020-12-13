@@ -68,7 +68,7 @@ RUN cd $TAR_DIR && wget $DRMAA_PYTHON_URL -O drmaa-python-0.7.9.tar.gz
 RUN cd $SRC_DIR && tar xzvf $TAR_DIR/drmaa-python-0.7.9.tar.gz
 
 # - Build
-RUN cd $DRMAA_PYTHON_SRC_DIR && python3.6 setup.py build
+RUN cd $DRMAA_PYTHON_SRC_DIR && python3.6 setup.py sdist bdist_wheel && python3.6 setup.py build
 
 # - Install
 RUN export PYTHONPATH=$DRMAA_PYTHON_INSTALL_DIR/lib/python3.6/site-packages && cd $DRMAA_PYTHON_SRC_DIR && python3.6 setup.py install --prefix=$DRMAA_PYTHON_INSTALL_DIR
